@@ -5,6 +5,7 @@
 #include <iostream> // Pull in std::cerr, std::endl
 #include <list>     // Pull in list
 #include <sstream>
+#include <string>
 
 using namespace std;
 
@@ -39,6 +40,8 @@ private:
   list<shared_ptr<SFAsset> > coins;
   list<shared_ptr<SFAsset> > walls;
 
+  
+  
   int fire;
 };
 #endif

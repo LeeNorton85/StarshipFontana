@@ -1,5 +1,6 @@
 #include "SFApp.h"
 
+
 SFApp::SFApp(std::shared_ptr<SFWindow> window) : fire(0), is_running(true), sf_window(window) {
   int canvas_w, canvas_h;
   SDL_GetRendererOutputSize(sf_window->getRenderer(), &canvas_w, &canvas_h);
@@ -9,6 +10,7 @@ SFApp::SFApp(std::shared_ptr<SFWindow> window) : fire(0), is_running(true), sf_w
   auto player_pos = Point2(canvas_w/2, 22);
   player->SetPosition(player_pos);
 
+  
   const int number_of_aliens = 10;
   for(int i=0; i<number_of_aliens; i++) {
     // place an alien at width/number_of_aliens * i
@@ -113,6 +115,9 @@ int SFApp::OnExecute() {
 }
 
 void SFApp::OnUpdateWorld() {
+
+  
+  
   // Update projectile positions
   for(auto p: projectiles) {
     p->GoNorth();
@@ -131,7 +136,6 @@ void SFApp::OnUpdateWorld() {
   for(auto p : projectiles) {
     for(auto a : aliens) {
       for(auto w : walls) {
-	
      
         if(p->CollidesWith(a)) {
          p->HandleCollision();
@@ -139,7 +143,7 @@ void SFApp::OnUpdateWorld() {
         
       } else if(p->CollidesWith(w)) {
 	  p->HandleCollision();
-      }
+	} 
     }
   }
   }
