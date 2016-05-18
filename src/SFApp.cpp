@@ -18,6 +18,15 @@ SFApp::SFApp(std::shared_ptr<SFWindow> window) : fire(0), is_running(true), sf_w
     aliens.push_back(alien);
   }
 
+  const int number_of_walls = 6;
+  for(int i=0; i<number_of_walls; i++) {
+    // place an wall at width/number_of_walls * i
+    auto wall = make_shared<SFAsset>(SFASSET_WALL, sf_window);
+    auto pos   = Point2((canvas_w/number_of_walls) * i, 400.0f);
+    wall->SetPosition(pos);
+    walls.push_back(wall);
+  }
+
   auto coin = make_shared<SFAsset>(SFASSET_COIN, sf_window);
   auto pos  = Point2((canvas_w/4), 100);
   coin->SetPosition(pos);
@@ -41,12 +50,50 @@ void SFApp::OnEvent(SFEvent& event) {
     OnUpdateWorld();
     OnRender();
     break;
+  case SFEVENT_PLAYER_UP:
+    player->GoNorth();
+
+    for(auto w : walls) {
+      if(player->CollidesWith(w)) {
+	player->GoSouth();
+      }
+    }
+ 
+    break;
+    
+  case SFEVENT_PLAYER_DOWN:
+    player->GoSouth();
+
+    for(auto w : walls) {
+      if(player->CollidesWith(w)) {
+	player->GoNorth();
+      }
+    }
+    
+    break;
+    
   case SFEVENT_PLAYER_LEFT:
     player->GoWest();
+
+    for(auto w : walls) {
+      if(player->CollidesWith(w)) {
+	player->GoEast();
+      }
+    }
+    
     break;
+    
   case SFEVENT_PLAYER_RIGHT:
     player->GoEast();
+    
+      for(auto w : walls) {
+	if(player->CollidesWith(w)) {
+	  player->GoWest();	
+      }
+    }
+      
     break;
+    
   case SFEVENT_FIRE:
     fire ++;
     FireProjectile();
@@ -83,12 +130,15 @@ void SFApp::OnUpdateWorld() {
   // Detect collisions
   for(auto p : projectiles) {
     for(auto a : aliens) {
-      if(p->CollidesWith(a)) {
-        p->HandleCollision();
-        a->HandleCollision();
+     
+        if(p->CollidesWith(a)) {
+         p->HandleCollision();
+         a->HandleCollision();
+        
       }
     }
   }
+
 
   // remove dead aliens (the long way)
   list<shared_ptr<SFAsset>> tmp;
@@ -115,6 +165,10 @@ void SFApp::OnRender() {
     if(a->IsAlive()) {a->OnRender();}
   }
 
+  for(auto w: walls) {
+    if(w->IsAlive()) {w->OnRender();}
+  }
+
   for(auto c: coins) {
     c->OnRender();
   }
@@ -127,5 +181,5 @@ void SFApp::FireProjectile() {
   auto pb = make_shared<SFAsset>(SFASSET_PROJECTILE, sf_window);
   auto v  = player->GetPosition();
   pb->SetPosition(v);
-  projectiles.push_back(pb);
+  projectiles.push_back(pb); 
 }
