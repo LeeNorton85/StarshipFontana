@@ -122,10 +122,16 @@ void SFAsset::GoNorth() {
 }
 
 void SFAsset::GoSouth() {
+  int w, h;
+  SDL_GetRendererOutputSize(sf_window->getRenderer(), &w, &h);
+
   Vector2 c = *(bbox->centre) + Vector2(0.0f, -5.0f);
-  bbox->centre.reset();
-  bbox->centre = make_shared<Vector2>(c);
+  if(!(c.getY() < 0)) {
+    bbox->centre.reset();
+    bbox->centre = make_shared<Vector2>(c);
+  }
 }
+
 
 bool SFAsset::CollidesWith(shared_ptr<SFAsset> other) {
   return bbox->CollidesWith(other->bbox);
@@ -144,7 +150,7 @@ bool SFAsset::IsAlive() {
 }
 
 void SFAsset::HandleCollision() {
-  if(SFASSET_PROJECTILE == type || SFASSET_ALIEN == type) {
+  if(SFASSET_PROJECTILE == type || SFASSET_ALIEN == type || SFASSET_WALL == type) {
     SetNotAlive();
   }
 

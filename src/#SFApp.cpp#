@@ -137,11 +137,11 @@ void SFApp::OnUpdateWorld() {
          p->HandleCollision();
          a->HandleCollision();
         
-      } else if(p->CollidesWith(w)) {
+      } else if
+	   (p->CollidesWith(w)) {
 	  p->HandleCollision();
       }
     }
-  }
   }
 
 
