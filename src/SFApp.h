@@ -39,6 +39,7 @@ private:
   list<shared_ptr<SFAsset> > aliens;
   list<shared_ptr<SFAsset> > coins;
   list<shared_ptr<SFAsset> > walls;
+  
 
   int points;
   

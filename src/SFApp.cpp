@@ -29,16 +29,14 @@ SFApp::SFApp(std::shared_ptr<SFWindow> window) : fire(0), points(0), is_running(
     walls.push_back(wall);
   }
 
-  const int number_of_coins = 5;
+  const int number_of_coins = 1;
   for(int i=0; i<number_of_coins; i++) {
     // place an coin at width/number_of_coins * i
     auto coin = make_shared<SFAsset>(SFASSET_COIN, sf_window);
-    auto pos   = Point2(((canvas_w/number_of_coins) * i)+60, 450.0f);
+    auto pos   = Point2(((canvas_w/number_of_coins) * i)+325, 450.0f);
     coin->SetPosition(pos);
     coins.push_back(coin);
   }
-
-
 
 }
 
@@ -63,10 +61,25 @@ void SFApp::OnEvent(SFEvent& event) {
     player->GoNorth();
 
     for(auto w : walls) {
+      for(auto c : coins) {
+	for(auto a : aliens) {
+
       if(player->CollidesWith(w)) {
-	player->GoSouth();
-      }
-    }
+	 player->GoSouth();
+	} else if (player->CollidesWith(c)) {
+
+	 std::wstring s1(L"You Win");
+	 std::wcout << s1 << std::endl;
+
+	is_running = false;
+	} else if (player->CollidesWith(a)) {
+
+	 std::wstring s2(L"You Lose");
+	 std::wcout << s2 << std::endl;
+	 is_running = false;
+	}
+	}
+    }}
  
     break;
     
@@ -74,39 +87,85 @@ void SFApp::OnEvent(SFEvent& event) {
     player->GoSouth();
 
     for(auto w : walls) {
+      for(auto c : coins) {
+	for(auto a : aliens) {
+
       if(player->CollidesWith(w)) {
-	player->GoNorth();
-      }
-    }
-    
+	 player->GoNorth();
+	} else if (player->CollidesWith(c)) {
+
+	 std::wstring s1(L"You Win");
+	 std::wcout << s1 << std::endl;
+
+	is_running = false;
+	} else if (player->CollidesWith(a)) {
+
+	 std::wstring s2(L"You Lose");
+	 std::wcout << s2 << std::endl;
+	 is_running = false;
+	}
+	}
+    }}
+ 
     break;
     
   case SFEVENT_PLAYER_LEFT:
     player->GoWest();
 
     for(auto w : walls) {
+      for(auto c : coins) {
+	for(auto a : aliens) {
+
       if(player->CollidesWith(w)) {
-	player->GoEast();
-      }
-    }
-    
+	 player->GoEast();
+	} else if (player->CollidesWith(c)) {
+
+	 std::wstring s1(L"You Win");
+	 std::wcout << s1 << std::endl;
+
+	is_running = false;
+	} else if (player->CollidesWith(a)) {
+
+	 std::wstring s2(L"You Lose");
+	 std::wcout << s2 << std::endl;
+	 is_running = false;
+	}
+	}
+    }}
+ 
     break;
     
   case SFEVENT_PLAYER_RIGHT:
     player->GoEast();
     
       for(auto w : walls) {
-	if(player->CollidesWith(w)) {
-	  player->GoWest();	
-      }
-    }
-      
+      for(auto c : coins) {
+	for(auto a : aliens) {
+
+      if(player->CollidesWith(w)) {
+	 player->GoWest();
+	} else if (player->CollidesWith(c)) {
+
+	 std::wstring s1(L"You Win");
+	 std::wcout << s1 << std::endl;
+
+	is_running = false;
+	} else if (player->CollidesWith(a)) {
+
+	 std::wstring s2(L"You Lose");
+	 std::wcout << s2 << std::endl;
+	 is_running = false;
+	}
+	}
+    }}
+ 
     break;
     
   case SFEVENT_FIRE:
     fire ++;
     FireProjectile();
     break;
+
   }
 }
 
@@ -130,56 +189,35 @@ void SFApp::OnUpdateWorld() {
     p->GoNorth();
   }
 
-
   // Update enemy positions
   for(auto a : aliens) {
-    // do something here
   }
 
   // Detect collisions
+	
   for(auto p : projectiles) {
     for(auto a : aliens) {
       for(auto w : walls) {
-	for(auto c: coins) {
 	
-     
+	  
         if(p->CollidesWith(a)) {
          p->HandleCollision();
          a->HandleCollision();
 	 
-	 points = points +50;
-	 if (points >= 3000) {
-	 std::wstring s1(L"You Win");
-	 std::wcout << s1 << std::endl;
-	 is_running = false; }
-
-	
-        
-      } else if(p->CollidesWith(c)) {
-		p->HandleCollision();
-		c->HandleCollision();
-
-	 points = points +500;
-	 if (points >= 3000) {
-	 std::wstring s2(L"You Win");
-	 std::wcout << s2 << std::endl;
-	 is_running = false; }
-
       } else if(p->CollidesWith(w)) {
-		p->HandleCollision();
-      }  
-}
-}
-    
-  }
-  }
+	 p->HandleCollision();
 
+      } 
+}
+}
+}
 
   // remove dead aliens (the long way)
   list<shared_ptr<SFAsset>> tmp;
   for(auto a : aliens) {
     if(a->IsAlive()) {
       tmp.push_back(a);
+
     }
   }
   aliens.clear();
@@ -194,8 +232,6 @@ void SFApp::OnUpdateWorld() {
   }
   coins.clear();
   coins = list<shared_ptr<SFAsset>>(tmp2);
-
-	
 
 }
 
