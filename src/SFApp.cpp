@@ -1,7 +1,7 @@
 #include "SFApp.h"
 
 
-SFApp::SFApp(std::shared_ptr<SFWindow> window) : fire(0), is_running(true), sf_window(window) {
+SFApp::SFApp(std::shared_ptr<SFWindow> window) : fire(0), points(0), is_running(true), sf_window(window) {
   int canvas_w, canvas_h;
   SDL_GetRendererOutputSize(sf_window->getRenderer(), &canvas_w, &canvas_h);
 
@@ -29,10 +29,17 @@ SFApp::SFApp(std::shared_ptr<SFWindow> window) : fire(0), is_running(true), sf_w
     walls.push_back(wall);
   }
 
-  auto coin = make_shared<SFAsset>(SFASSET_COIN, sf_window);
-  auto pos  = Point2((canvas_w/4), 100);
-  coin->SetPosition(pos);
-  coins.push_back(coin);
+  const int number_of_coins = 5;
+  for(int i=0; i<number_of_coins; i++) {
+    // place an coin at width/number_of_coins * i
+    auto coin = make_shared<SFAsset>(SFASSET_COIN, sf_window);
+    auto pos   = Point2(((canvas_w/number_of_coins) * i)+60, 450.0f);
+    coin->SetPosition(pos);
+    coins.push_back(coin);
+  }
+
+
+
 }
 
 SFApp::~SFApp() {
@@ -123,9 +130,6 @@ void SFApp::OnUpdateWorld() {
     p->GoNorth();
   }
 
-  for(auto c: coins) {
-    c->GoNorth();
-  }
 
   // Update enemy positions
   for(auto a : aliens) {
@@ -136,15 +140,37 @@ void SFApp::OnUpdateWorld() {
   for(auto p : projectiles) {
     for(auto a : aliens) {
       for(auto w : walls) {
+	for(auto c: coins) {
+	
      
         if(p->CollidesWith(a)) {
          p->HandleCollision();
          a->HandleCollision();
+	 
+	 points = points +50;
+	 if (points >= 3000) {
+	 std::wstring s1(L"You Win");
+	 std::wcout << s1 << std::endl;
+	 is_running = false; }
+
+	
         
+      } else if(p->CollidesWith(c)) {
+		p->HandleCollision();
+		c->HandleCollision();
+
+	 points = points +500;
+	 if (points >= 3000) {
+	 std::wstring s2(L"You Win");
+	 std::wcout << s2 << std::endl;
+	 is_running = false; }
+
       } else if(p->CollidesWith(w)) {
-	  p->HandleCollision();
-	} 
-    }
+		p->HandleCollision();
+      }  
+}
+}
+    
   }
   }
 
@@ -158,6 +184,19 @@ void SFApp::OnUpdateWorld() {
   }
   aliens.clear();
   aliens = list<shared_ptr<SFAsset>>(tmp);
+
+  // remove dead coins
+  list<shared_ptr<SFAsset>> tmp2;
+  for(auto c : coins) {
+    if(c->IsAlive()) {
+      tmp2.push_back(c);
+    }
+  }
+  coins.clear();
+  coins = list<shared_ptr<SFAsset>>(tmp2);
+
+	
+
 }
 
 void SFApp::OnRender() {

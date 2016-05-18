@@ -40,7 +40,7 @@ private:
   list<shared_ptr<SFAsset> > coins;
   list<shared_ptr<SFAsset> > walls;
 
-  
+  int points;
   
   int fire;
 };
