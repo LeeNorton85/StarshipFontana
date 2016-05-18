@@ -31,7 +31,7 @@ SFApp::SFApp(std::shared_ptr<SFWindow> window) : fire(0), points(0), is_running(
 
   const int number_of_coins = 1;
   for(int i=0; i<number_of_coins; i++) {
-    // place an coin at width/number_of_coins * i
+    // place a coin at width/number_of_coins * i
     auto coin = make_shared<SFAsset>(SFASSET_COIN, sf_window);
     auto pos   = Point2(((canvas_w/number_of_coins) * i)+325, 450.0f);
     coin->SetPosition(pos);
@@ -57,6 +57,7 @@ void SFApp::OnEvent(SFEvent& event) {
     OnUpdateWorld();
     OnRender();
     break;
+
   case SFEVENT_PLAYER_UP:
     player->GoNorth();
 
@@ -155,16 +156,44 @@ void SFApp::OnEvent(SFEvent& event) {
 	 std::wstring s2(L"You Lose");
 	 std::wcout << s2 << std::endl;
 	 is_running = false;
+
+
 	}
 	}
     }}
  
     break;
-    
+
+// Win/Lose Message seems to be printed a large number of times, but not always the same amount
+// I think this may have to do with the collision.
+// I needed to abandon a score/points related victory as it seemed that the game was detecting
+// multiple hits per projectile, 1 bullet was hitting 10+ times, as it passed through an object coin/alien
+// this meant that my scoring threshold for victory was being met in 1-2 shots.
+// as the number of times that each target was hit seemed to vary
+// i could not use a work around of just increasing the score limit, as sometimes this limit would/would not
+// be reached. As such, i opted to make the victory condition simply to collect a coin.
+// it appears that the player is comming into contact with the victory coin, many times before the game closes.
+
+   
   case SFEVENT_FIRE:
     fire ++;
     FireProjectile();
     break;
+
+// Unable to figure this out I haven't left myself enough time to have a proper go at it.
+
+/*  case SFEVENT_MOVE1:
+  for(auto a : aliens) {
+  a->Move1();
+  break;
+}
+  case SFEVENT_MOVE2:
+  for(auto a : aliens) { 
+  a->Move2();
+  break;
+}
+
+*/
 
   }
 }
@@ -182,7 +211,7 @@ int SFApp::OnExecute() {
 
 void SFApp::OnUpdateWorld() {
 
-  
+int i;  
   
   // Update projectile positions
   for(auto p: projectiles) {
@@ -190,11 +219,17 @@ void SFApp::OnUpdateWorld() {
   }
 
   // Update enemy positions
-  for(auto a : aliens) {
-  }
-
+//Unable to figure this out as above.
+/*  for(auto a : aliens) {
+	a->Move1();
+	a->Move2(); 
+}
+*/
   // Detect collisions
 	
+// While possible to remove projectiles when hitting a wall, it seems they only stop being drawn
+// but still exist, just invisibly. 'popped' projectiles seem to still kill targets some seconds later.
+
   for(auto p : projectiles) {
     for(auto a : aliens) {
       for(auto w : walls) {

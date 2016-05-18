@@ -132,6 +132,26 @@ void SFAsset::GoSouth() {
   }
 }
 
+void SFAsset::Move1() {
+  int i;
+
+  for (i = 0; i < 100; i++) { 
+  Vector2 c = *(bbox->centre) + Vector2(5.0f, 0.0f);
+  bbox->centre.reset();
+  bbox->centre = make_shared<Vector2>(c);
+  }
+}
+
+void SFAsset::Move2() {
+  int i;
+
+  for (i = 0; i < 100; i++) { 
+  Vector2 c = *(bbox->centre) + Vector2(-5.0f, 0.0f);
+  bbox->centre.reset();
+  bbox->centre = make_shared<Vector2>(c);
+  }
+}
+
 
 bool SFAsset::CollidesWith(shared_ptr<SFAsset> other) {
   return bbox->CollidesWith(other->bbox);
